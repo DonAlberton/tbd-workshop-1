@@ -12,6 +12,25 @@ resource "google_storage_bucket" "tbd-code-bucket" {
   #checkov:skip=CKV_GCP_29: "Ensure that Cloud Storage buckets have uniform bucket-level access enabled"
   #checkov:skip=CKV_GCP_78: "Ensure Cloud storage has versioning enabled"
   public_access_prevention = "enforced"
+
+  lifecycle_rule {
+    condition {
+      age = 60
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 7
+    }
+    action {
+      type = "AbortIncompleteMultipartUpload"
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_member" "tbd-code-bucket-iam-viewer" {
@@ -37,6 +56,25 @@ resource "google_storage_bucket" "tbd-data-bucket" {
   public_access_prevention    = "enforced"
   versioning {
     enabled = true
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 60
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 7
+    }
+    action {
+      type = "AbortIncompleteMultipartUpload"
+    }
   }
 }
 
