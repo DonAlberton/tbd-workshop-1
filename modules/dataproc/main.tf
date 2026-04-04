@@ -40,6 +40,25 @@ resource "google_storage_bucket" "dataproc_staging" {
   versioning {
     enabled = true
   }
+
+  lifecycle_rule {
+    condition {
+      age = 60
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 7
+    }
+    action {
+      type = "AbortIncompleteMultipartUpload"
+    }
+  }
 }
 
 resource "google_storage_bucket" "dataproc_temp" {
@@ -52,6 +71,25 @@ resource "google_storage_bucket" "dataproc_temp" {
 
   versioning {
     enabled = true
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 60
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 7
+    }
+    action {
+      type = "AbortIncompleteMultipartUpload"
+    }
   }
 }
 
