@@ -71,6 +71,7 @@ resource "google_container_cluster" "airflow" {
 }
 
 resource "google_container_node_pool" "airflow_nodes" {
+  #checkov:skip=CKV_GCP_69: "Workshop cluster — Workload Identity not enabled, GKE Metadata Server not applicable"
   name     = "airflow-pool"
   project  = var.project_name
   location = "${var.region}-b"
@@ -98,10 +99,6 @@ resource "google_container_node_pool" "airflow_nodes" {
     shielded_instance_config {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
-    }
-
-    workload_metadata_config {
-      mode = "GKE_METADATA"
     }
   }
 }
