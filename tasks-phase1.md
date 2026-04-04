@@ -57,9 +57,9 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
 
 1. Authors:
 
-   ***enter your group nr***
+   ***12***
 
-   ***link to forked repo***
+   ***https://github.com/DonAlberton/tbd-workshop-1/blob/master/tasks-phase1.md***
 
 2. Follow all steps in README.md.
 
