@@ -32,8 +32,14 @@ resource "google_container_cluster" "airflow" {
   #checkov:skip=CKV_GCP_24: "Workshop cluster — PodSecurityPolicy not needed"
   #checkov:skip=CKV_GCP_25: "Workshop cluster — private cluster not required"
   #checkov:skip=CKV_GCP_18: "Workshop cluster — master auth networks not required"
+  #checkov:skip=CKV_GCP_20: "Workshop cluster — master authorized networks not required"
   #checkov:skip=CKV_GCP_12: "Workshop cluster — network policy not required"
   #checkov:skip=CKV_GCP_23: "Workshop cluster — alias IPs not required"
+  #checkov:skip=CKV_GCP_61: "Workshop cluster — VPC flow logs not required"
+  #checkov:skip=CKV_GCP_65: "Workshop cluster — Google Groups RBAC not required"
+  #checkov:skip=CKV_GCP_66: "Workshop cluster — Binary Authorization not required"
+  #checkov:skip=CKV_GCP_64: "Workshop cluster — private nodes not required"
+  #checkov:skip=CKV_GCP_69: "Workshop cluster — GKE Metadata Server configured on node pool"
   depends_on = [google_project_service.container]
 
   name     = "airflow-cluster"
@@ -48,6 +54,20 @@ resource "google_container_cluster" "airflow" {
   subnetwork = var.subnet
 
   deletion_protection = false
+
+  resource_labels = {
+    env = "workshop"
+  }
+
+  release_channel {
+    channel = "REGULAR"
+  }
+
+  master_auth {
+    client_certificate_config {
+      issue_client_certificate = false
+    }
+  }
 }
 
 resource "google_container_node_pool" "airflow_nodes" {
@@ -62,6 +82,11 @@ resource "google_container_node_pool" "airflow_nodes" {
     ignore_changes = [node_config]
   }
 
+  management {
+    auto_upgrade = true
+    auto_repair  = true
+  }
+
   node_config {
     machine_type    = var.machine_type
     service_account = google_service_account.airflow_sa.email
@@ -69,5 +94,14 @@ resource "google_container_node_pool" "airflow_nodes" {
 
     disk_type    = "pd-standard"
     disk_size_gb = 50
+
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
+    }
+
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
   }
 }
