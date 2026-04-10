@@ -59,7 +59,7 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
 
    ***12***
 
-   ***https://github.com/DonAlberton/tbd-workshop-1/blob/master/tasks-phase1.md***
+   ***https://github.com/DonAlberton/tbd-workshop-1/***
 
 2. Follow all steps in README.md.
 
@@ -70,15 +70,24 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
 
     2. Create PR from this branch to **YOUR** master and merge it to make new release.
 
+    ![img.png](doc/figures/successfull-ga.png)
     ***place the screenshot from GA after successful application of release***
 
 
 5. Analyze terraform code. Play with terraform plan, terraform graph to investigate different modules.
-
+    Module Dataproc creates iam & identity roles, storage (dataproc_staging bucket — stores job artifacts (jars, scripts), dataproc_temp bucket — stores intermediate job data) and the cluster. The cluster consists of a master node (compute engine, 100GB disk size), workers (two compute engines of 100GB disk size each), the image of the machines (Dataproc image) and a network with an internal IP address. The default compute engine specs are vCPUs 2 (shared), 4GB RAM. On startup each node runs pip-intall.sh to install pandas, mlflow, google-cloud-storage, jupyterlab, dbt-core + dbt-spark. HTTP port access is enabled so you can access Jupyter/Spark UIs via the Dataproc web interface.
+    ![img.png](doc/figures/terraform-graph.png)
     ***describe one selected module and put the output of terraform graph for this module here***
 
 6. Reach YARN UI
-
+    ```
+    gcloud compute ssh tbd-cluster-m \
+        --project=tbd-2026l-347426 \
+        --zone=europe-west1-b \
+        --tunnel-through-iap \
+        -- -L 8088:localhost:8088 -N
+    ```
+    ![img.png](doc/figures/yarn-panel.png)
    ***place the command you used for setting up the tunnel, the port and the screenshot of YARN UI here***
 
    Hint: the Dataproc cluster has `internal_ip_only = true`, so you need to use an IAP tunnel.
