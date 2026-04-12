@@ -209,12 +209,33 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
     ```
 
     ***place the SQL code and query output here***
-
+    ```
+    CREATE OR REPLACE EXTERNAL TABLE `shakespeare.shakespeare`
+        OPTIONS (
+        format = 'ORC',
+        uris = ['gs://tbd-2026l-347426-data/data/shakespeare/*.orc']
+        );
+    ```
     ***why does ORC not require a table schema?***
+    BigQuery korzysta z mechanizmu schema auto-detection. Format ORC przechowuje nalezyte informacje (nazwy kolumn, typy danych) w swoich metadanych.
 
 12. Add support for preemptible/spot instances in a Dataproc cluster
 
     ***place the link to the modified file and inserted terraform code***
+
+    https://github.com/bdg-tbd/tbd-workshop-1/blob/master/modules/dataproc/main.tf
+
+    ```
+    secondary_worker_config {
+      num_instances    = 2
+      machine_type     = var.machine_type
+      preemptibility   = "SPOT" 
+      disk_config {
+        boot_disk_type    = "pd-standard"
+        boot_disk_size_gb = 100
+      }
+    }
+    ```
 
 13. Triggered Terraform Destroy on Schedule or After PR Merge. Goal: make sure we never forget to clean up resources and burn money.
 
