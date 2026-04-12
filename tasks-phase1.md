@@ -127,10 +127,56 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
     a) In the Airflow UI (http://AIRFLOW_EXTERNAL_IP:8080, login: admin/admin), find the `dataproc_job` DAG, unpause it and trigger it manually.
 
     ***place a screenshot of the DAG in the Airflow UI***
+    ![img.png](doc/figures/DAG_UI.png)
 
     b) The DAG will fail. Examine the task logs in the Airflow UI to find the root cause.
 
+
+
+    Airlfow logs:
+    ```
+    pyspark_job {
+    main_python_file_uri: "gs://tbd-2026l-347426-code/spark-job.py"
+    properties {
+        key: "spark.executor.memory"
+        value: "2g"
+    }
+    properties {
+        key: "spark.executor.instances"
+        value: "2"
+    }
+    properties {
+        key: "spark.driver.memory"
+        value: "2g"
+    }
+    }
+    status {
+    state: ERROR
+    details: "Google Cloud Dataproc Agent reports job failure. If logs are available, they can be found at:\nhttps://console.cloud.google.com/dataproc/jobs/3f32e1f3-03d4-4f2e-8b61-f06d54d45f90?project=tbd-2026l-347426&region=europe-west1\ngcloud dataproc jobs wait \'3f32e1f3-03d4-4f2e-8b61-f06d54d45f90\' --region \'europe-west1\' --project \'tbd-2026l-347426\'\nhttps://console.cloud.google.com/storage/browser/tbd-2026l-347426-dataproc-staging/google-cloud-dataproc-metainfo/503d51b2-c2d3-424d-8c60-be01b94e1589/jobs/3f32e1f3-03d4-4f2e-8b61-f06d54d45f90/\ngs://tbd-2026l-347426-dataproc-staging/google-cloud-dataproc-metainfo/503d51b2-c2d3-424d-8c60-be01b94e1589/jobs/3f32e1f3-03d4-4f2e-8b61-f06d54d45f90/driveroutput.*"
+    state_start_time {
+        seconds: 1776013363
+        nanos: 798816000
+    }
+    }
+
+    ```
+    GCP Logs:
+    ```
+    {
+    "code": 404,
+    "errors": [
+        {
+        "domain": "global",
+        "message": "The specified bucket does not exist.",
+        "reason": "notFound"
+        }
+    ],
+    "message": "The specified bucket does not exist."
+    }
+    ```
     ***paste the relevant error message from the Airflow task log***
+
+    Wynika z tego, ze bucket źródłowy podany w definicji joba sparkowego nie istnieje. Trzeba go zmienić.
 
     ***describe what the error is and how you found it***
 
@@ -142,10 +188,14 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
 
     ***paste the link to the fixed file***
 
+    https://storage.googleapis.com/tbd-2026l-347426-code/spark-job.py
+
     d) Verify the DAG completes successfully and check that ORC files were written to the data bucket:
     ```bash
     gsutil ls gs://PROJECT_NAME-data/data/shakespeare/
     ```
+    Są pliki od 00000 do 00116
+    ![img.png](doc/figures/DAG_OK.png)
 
     ***place a screenshot of the successful DAG run in Airflow UI***
 
