@@ -105,8 +105,45 @@ For all the resources of type: `google_artifact_registry_repository`, `google_st
 create a sample usage profiles and add it to the Infracost task in CI/CD pipeline. Usage file [example](https://github.com/infracost/infracost/blob/master/infracost-usage-example.yml)
 
    ***place the expected consumption you entered here***
-
+    ```
+    version: 0.1
+    
+    resource_usage:
+    
+    google_artifact_registry_repository.registry:
+        storage_gb: 150
+        monthly_egress_data_transfer_gb:
+        europe-west1-b: 150
+    
+    
+    google_storage_bucket.tbd-code-bucket:
+        storage_gb: 50
+        monthly_class_a_operations: 2000
+        monthly_class_b_operations: 5000
+        monthly_egress_data_gb: 20
+    
+    google_storage_bucket.tbd-data-bucket:
+        storage_gb: 500
+        monthly_class_a_operations: 5000
+        monthly_class_b_operations: 20000
+        monthly_egress_data_gb: 100
+    
+    google_storage_bucket.dataproc_staging:
+        storage_gb: 100
+        monthly_class_a_operations: 1000
+        monthly_class_b_operations: 5000
+        monthly_egress_data_gb: 50
+    
+    google_storage_bucket.dataproc_temp:
+        storage_gb: 50
+        monthly_class_a_operations: 1000
+        monthly_class_b_operations: 5000
+        monthly_egress_data_gb: 20
+    
+    ```
    ***place the screenshot from infracost output here***
+
+   ![img.png](doc/figures/infracost.png)
 
 9. Find and correct the error in spark-job.py
 
