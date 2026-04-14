@@ -254,6 +254,7 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
         );
     ```
     ***why does ORC not require a table schema?***
+    
     BigQuery korzysta z mechanizmu schema auto-detection. Format ORC przechowuje nalezyte informacje (nazwy kolumn, typy danych) w swoich metadanych.
 
 12. Add support for preemptible/spot instances in a Dataproc cluster
@@ -347,4 +348,5 @@ jobs:
 ***paste screenshot/log snippet confirming the auto-destroy ran***
  ![img.png](doc/figures/autodestroy.png)
 ***write one sentence why scheduling cleanup helps in this workshop***
+
 Auto Destroy pozwala na oszczędnośc pieniedzy w przypadku gdyby student zapomniał wyłączyc infrstruktury.
