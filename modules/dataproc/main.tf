@@ -172,10 +172,9 @@ resource "google_dataproc_cluster" "tbd-dataproc-cluster" {
       }
 
     }
-    secondary_worker_config {
-      num_instances    = 2
-      machine_type     = var.machine_type
-      preemptibility   = "SPOT" 
+    preemptible_worker_config {
+      num_instances  = 2
+      preemptibility = "SPOT"
       disk_config {
         boot_disk_type    = "pd-standard"
         boot_disk_size_gb = 100
