@@ -99,6 +99,7 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
     2. List of buckets for disposal
 
     ***place your diagram here***
+    ![img.png](doc/figures/diagram.png)
 
 8. Create a new PR and add costs by entering the expected consumption into Infracost
 For all the resources of type: `google_artifact_registry_repository`, `google_storage_bucket`
