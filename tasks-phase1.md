@@ -99,6 +99,7 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
     2. List of buckets for disposal
 
     ***place your diagram here***
+    ![img.png](doc/figures/diagram.png)
 
 8. Create a new PR and add costs by entering the expected consumption into Infracost
 For all the resources of type: `google_artifact_registry_repository`, `google_storage_bucket`
@@ -254,19 +255,19 @@ create a sample usage profiles and add it to the Infracost task in CI/CD pipelin
         );
     ```
     ***why does ORC not require a table schema?***
+    
     BigQuery korzysta z mechanizmu schema auto-detection. Format ORC przechowuje nalezyte informacje (nazwy kolumn, typy danych) w swoich metadanych.
 
 12. Add support for preemptible/spot instances in a Dataproc cluster
 
     ***place the link to the modified file and inserted terraform code***
 
-    https://github.com/bdg-tbd/tbd-workshop-1/blob/master/modules/dataproc/main.tf
+    https://github.com/DonAlberton/tbd-workshop-1/blob/master/modules/dataproc/main.tf
 
     ```
-    secondary_worker_config {
-      num_instances    = 2
-      machine_type     = var.machine_type
-      preemptibility   = "SPOT" 
+    preemptible_worker_config {
+      num_instances  = 2
+      preemptibility = "SPOT"
       disk_config {
         boot_disk_type    = "pd-standard"
         boot_disk_size_gb = 100
@@ -292,7 +293,61 @@ Steps:
 Hint: use the existing `.github/workflows/destroy.yml` as a starting point.
 
 ***paste workflow YAML here***
+```
+name: Auto Destroy
 
+on:
+  schedule:
+    - cron: "0 3 * * *"   # runs at 3 am utc
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
+
+permissions: read-all
+
+jobs:
+  destroy:
+    if: |
+      github.event_name == 'schedule' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.merged == true &&
+       contains(github.event.pull_request.title, '[CLEANUP]'))
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+      issues: write
+
+    steps:
+    - uses: 'actions/checkout@v3'
+
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.11.0
+
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_NAME }}
+        service_account: ${{ secrets.GCP_WORKLOAD_IDENTITY_SA_EMAIL }}
+
+    - name: Terraform Init
+      id: init
+      run: terraform init -backend-config=env/backend.tfvars
+
+    - name: Terraform Destroy
+      id: destroy
+      run: terraform destroy -no-color -var-file env/project.tfvars -auto-approve
+      continue-on-error: false
+```
 ***paste screenshot/log snippet confirming the auto-destroy ran***
-
+ ![img.png](doc/figures/autodestroy.png)
 ***write one sentence why scheduling cleanup helps in this workshop***
+
+Auto Destroy pozwala na oszczędnośc pieniedzy w przypadku gdyby student zapomniał wyłączyc infrstruktury.
