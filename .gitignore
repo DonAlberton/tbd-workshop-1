@@ -38,3 +38,8 @@ terraform.rc
 .DS_Store
 bootstrap/terraform.tfstate_*
 bin/
+
+data/events.csv
+data/events.jsonl
+.data/*
+data/*
